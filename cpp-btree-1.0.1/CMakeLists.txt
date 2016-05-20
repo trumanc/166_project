@@ -27,6 +27,8 @@ set(CMAKE_CXX_FLAGS "-g -O2")
 
 if(build_tests)
   enable_testing()
+  include_directories(gflags)
+  add_subdirectory(gflags)
   add_executable(btree_test btree_test.cc btree_test_flags.cc)
   add_executable(safe_btree_test safe_btree_test.cc btree_test_flags.cc)
   add_executable(btree_bench btree_bench.cc btree_test_flags.cc)
