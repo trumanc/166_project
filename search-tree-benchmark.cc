@@ -17,23 +17,33 @@ bool contains(btree::btree_set<int>& s, int n) {
 
 int main(int argc, char* argv[]) {
   vector<int> v;
-  for (int i = 1; i <= 16; i++) {
-    v.push_back(i);
+  set<int> s;
+  for (int i = 1; i <= 2000; i++) {
+    v.push_back(i *2);
+    s.insert(i * 2);
   }
   VebTree t(v);
 
-  btree::btree_set<int> s;
+  //btree::btree_set<int> s;
   //set<int> s;
-  for (int i = 1000; i < 2000; i++) {
-    s.insert(i);
-  }
-
-  for (int n = 0; n < 1000; n++) {
-    int r = random() % 4000;
-    if (contains(s, r) != (1000 <= r && r < 2000)) {
-      cout << "ERROR" << endl;
+  //for (int i = 1000; i < 10000; i++) {
+    //s.insert(i*2);
+  //}
+  int errors = 0;
+  int found = 0;
+  for (int n = 0; n < 20000; n++) {
+    int r = random() % 5000;
+    //if (contains(s, r) != (2000 <= r && r <= 20000 && r % 2 == 0)) {
+    if (t.contains(r) != contains(s, r)) {
+      cout << "ERROR: searched for " << r << "..."  << t.contains(r) << endl;
+      errors++;
     }
+    if (contains(s, r)) {
+      found++;
+    }
+
   }
-  cout << "Done!" << endl;
+  cout << "Done! (errors: " << errors << ")" << endl;
+  cout << "found: " << found << endl;
   return 0;
 }
