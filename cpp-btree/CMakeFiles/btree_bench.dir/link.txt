@@ -1,0 +1,1 @@
+/usr/bin/c++   -g -O2    CMakeFiles/btree_bench.dir/btree_bench.cc.o CMakeFiles/btree_bench.dir/btree_test_flags.cc.o  -o btree_bench  -Lgtest -rdynamic gflags/libgflags_nothreads.so.2.2.0 gtest/libgtest.so -lpthread -Wl,-rpath,gtest:/home/truman/Dropbox/Courses/DS_CS166/project/code/cpp-btree-1.0.1/gflags:/home/truman/Dropbox/Courses/DS_CS166/project/code/cpp-btree-1.0.1/gtest 
