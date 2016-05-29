@@ -10,6 +10,7 @@ public:
   VebTree(std::vector<int> keys);
 
   //should return value later
+  bool contains(int key);
   int getPredecessor(int key);
 
 private:
@@ -19,8 +20,13 @@ private:
                         int treeMinIndex,
                         int length);
 
-  
+  bool containsHelper(int key, int index, int order, int& answer, bool isParent=false);
+
+
+  int findSubtree(int key, int index, int order); 
   std::vector<int> tree;
+  int treeOrder;
+  int numSegments;
 }; 
 
 
