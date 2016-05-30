@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <iostream>
 #include "assert.h"
+#include "float.h"
 using namespace std;
 
 // For quickly converting from order to the size of that perfect tree.
@@ -10,7 +11,7 @@ using namespace std;
 // Can go the opposite direction with (ceil(log2(ceil(log2(size + 1)))))
 static unsigned orderToSize[] = {1, 3, 15, 255, 65535, 4294967295};
 
-VebTree::VebTree(std::vector<int> keys){
+VebTree::VebTree(std::vector<double> keys){
   //tree = vector<int>(keys.size()); // This will order the vals into a tree
   if (keys.size() < 2) {
     cout << "Cannot create a vEB tree of size < 2. Exiting..." << endl;
@@ -23,8 +24,8 @@ VebTree::VebTree(std::vector<int> keys){
   numSegments = nSeg;
   int nTop = keys.size() - (nSeg * sizeB);
 
-  tree = vector<int>(keys.size() - nTop + sizeB);
-  vector<int> topElems;
+  tree = vector<double>(keys.size() - nTop + sizeB);
+  vector<double> topElems;
   int currIndex = sizeB; // Reserve the first block for our top tree
   int inputIndex = 0;
   for (int i = 0; i < nSeg; i++) {
@@ -42,7 +43,7 @@ VebTree::VebTree(std::vector<int> keys){
     inputIndex++;
   }
   while(topElems.size() < sizeB) {
-    topElems.push_back(INT_MAX);
+    topElems.push_back(DBL_MAX);
   }
 
   recursivelyPlace(topElems, 0, tree, 0, sizeB);
@@ -60,9 +61,9 @@ bool isPerfectSubTreeSize(int size) {
   return size == 1 || size == 3 || size == 15 || size == 255 || size == 65535;
 }
 
-void VebTree::recursivelyPlace(vector<int>& sortedInput,
+void VebTree::recursivelyPlace(vector<double>& sortedInput,
                                 int inputMinIndex,
-                                vector<int>& tree,
+                                vector<double>& tree,
                                 int treeMinIndex, 
                                 int size) {
   // NOTE: range is [minIndex, maxIndex), exclusing the maxIndex
@@ -86,7 +87,7 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
   // Reserve the first segment spot for the top tree
   int currIndex = treeMinIndex + subTreeSize;
   // Remember the elems for the top tree as we go
-  vector<int> topElems;
+  vector<double> topElems;
   for (int child = 0; child < numChildren; child++) {
     recursivelyPlace(sortedInput, inputMinIndex + (child * (subTreeSize + 1)),
                      tree, currIndex,
@@ -106,8 +107,8 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
 }
   
 
-int VebTree::getPredecessor(int key) {
-  return -1; 
+double VebTree::getPredecessor(double key) {
+  return -1.0; 
 }
 
 
@@ -151,7 +152,7 @@ int VebTree::getPredecessor(int key) {
  * If it wasn't in the bottom tree, then we calculate which subtree it would be
  * in, and return false.
  */
-bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
+bool VebTree::containsHelper(double key, int index, int order, int& returnAnswer,
                              bool isParent) {
   if (index < 0 || index > tree.size()) {
     //cout << "Hit the weird base case in contains..." << endl;
@@ -210,7 +211,7 @@ bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
   }
 }
 
-bool VebTree::contains(int key) {
+bool VebTree::contains(double key) {
   
   int dummy;
   // The true indicates that this is the highest level tree, and so it

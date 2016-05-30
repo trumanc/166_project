@@ -7,20 +7,20 @@ using namespace std;
 #include "btree_set.h"
 #include "vEB-tree.h"
 
-bool contains(set<int>& s, int n) {
+bool contains(set<double>& s, double n) {
   return s.find(n) != s.end();
 }
 
-bool contains(btree::btree_set<int>& s, int n) {
+bool contains(btree::btree_set<double>& s, double n) {
   return s.find(n) != s.end();
 }
 
 int main(int argc, char* argv[]) {
-  vector<int> v;
-  set<int> s;
+  vector<double> v;
+  set<double> s;
   for (int i = 1; i <= 2000; i++) {
-    v.push_back(i *2);
-    s.insert(i * 2);
+    v.push_back(i *2.0);
+    s.insert(i * 2.0);
   }
   VebTree t(v);
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
   int errors = 0;
   int found = 0;
   for (int n = 0; n < 20000; n++) {
-    int r = random() % 5000;
+    double r = random() % 5000;
     //if (contains(s, r) != (2000 <= r && r <= 20000 && r % 2 == 0)) {
     if (t.contains(r) != contains(s, r)) {
       cout << "ERROR: searched for " << r << "..."  << t.contains(r) << endl;

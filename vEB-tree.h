@@ -7,24 +7,24 @@
 // Keys and Values
 class VebTree {
 public:
-  VebTree(std::vector<int> keys);
+  VebTree(std::vector<double> keys);
 
   //should return value later
-  bool contains(int key);
-  int getPredecessor(int key);
+  bool contains(double key);
+  double getPredecessor(double key);
 
 private:
-  void recursivelyPlace(std::vector<int>& sortedInput,
+  void recursivelyPlace(std::vector<double>& sortedInput,
                         int inputMinIndex,
-                        std::vector<int>& tree,
+                        std::vector<double>& tree,
                         int treeMinIndex,
                         int length);
 
-  bool containsHelper(int key, int index, int order, int& answer, bool isParent=false);
+  bool containsHelper(double key, int index, int order, int& answer, bool isParent=false);
 
 
-  int findSubtree(int key, int index, int order); 
-  std::vector<int> tree;
+  int findSubtree(double key, int index, int order); 
+  std::vector<double> tree;
   int treeOrder;
   int numSegments;
 }; 
