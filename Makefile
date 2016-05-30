@@ -1,26 +1,28 @@
-CPPFLAGS = -I./cpp-btree -std=c++11 -O3
+CPPFLAGS = -I./cpp-btree -I./timing-tests -std=c++11 -O3
 
-CXXFLAGS = -std=c++11 -I./timing-tests -Wall -Werror -O3 
 CXX = g++
+HEADERS = cotree.h vEB-tree.h
 TDIR = ./timing-tests
-OBJECTS = $(TDIR)/Main.o $(TDIR)/StdSetTree.o $(TDIR)/Timing.o vEB-tree.o $(TDIR)/HashTable.o
+OBJECTS = $(TDIR)/Main.o $(TDIR)/StdSetTree.o $(TDIR)/Timing.o vEB-tree.o $(TDIR)/HashTable.o $(TDIR)/vEB-tree-wrapper.o
+
+
+all: run-timing-tests test tree-tester
 
 run-timing-tests: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CPPFLAGS) -o $@ $^
 
-program: search-tree-benchmark.cc vEB-tree.o
-	g++ search-tree-benchmark.cc vEB-tree.o -o tree-tester $(CPPFLAGS)
+%.o: %.cc $(HEADERS)
+	$(CXX) $(CPPFLAGS) -c -o $@ $<
+
+test: test.o vEB-tree.o
+	$(CXX) $(CPPFLAGS) -o $@ $^
+
+tree-tester: search-tree-benchmark.cc vEB-tree.o
+	g++ search-tree-benchmark.cc vEB-tree.o -o $@ $(CPPFLAGS)
 
 vEB-tree.o: vEB-tree.h vEB-tree.cc
 	g++ vEB-tree.cc -c $(CPPFLAGS)
 
-$(TDIR)/Main.o: $(TDIR)/Main.cc $(TDIR)/Timing.h $(TDIR)/StdSetTree.h vEB-tree.h
-
-$(TDIR)/StdSetTree.o: $(TDIR)/StdSetTree.cc $(TDIR)/StdSetTree.h
-
-$(TDIR)/HashTable.o: $(TDIR)/HashTable.cc $(TDIR)/HashTable.h
-
-$(TDIR)/Timing.o: $(TDIR)/Timing.cc $(TDIR)/Timing.h
-
-clean :
-	rm -f $(TDIR)/Main.o $(TDIR)/StdSetTree.o $(TDIR)/Timing.o vEB-tree.o $(TDIR)/HashTable.o tree-tester run-timing-tests 
+clean:
+	rm -f -- *.o 
+	rm -rf -- $(TDIR)/*.o
