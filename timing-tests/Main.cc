@@ -168,25 +168,26 @@ int main(int argc, const char * argv[]) {
   }
   std::cout << std::endl;
 
-  // Some Zipfian distributed tests
-  for (double z: {0.5, 0.75, 1.0, 1.2, 1.3}) {
-    auto distribution_z = zipfian(TreeSize, z);
-    std::cout << "Access Elements According to a Zipf(" << z << ") Distribution:" << std::endl;
-    if (set_type & VebTreeType) {
-      std::cout << "  VebTree:            " << timeDistribution<VebTreeWrapper>(distribution_z, NumLookups) << " ms" << std::endl;
-    }
-    if (set_type & COTreeType) {
-      std::cout << "  COTree:             " << timeDistribution<COTreeWrapper>(distribution_z, NumLookups) << " ms" << std::endl;
-    }
-    if (set_type & BTreeType) {
-      std::cout << "  BTree:              " << timeDistribution<BTreeWrapper>(distribution_z, NumLookups) << " ms" << std::endl;
-    }
-    if (set_type & StdSetType) {
-      std::cout << "  std::set:           " << timeDistribution<StdSetTree>(distribution_z, NumLookups) << " ms" << std::endl;
-    }
-    if (set_type & StdUnorderedSetType) {
-      std::cout << "  std::unordered_set: " << timeDistribution<HashTable>(distribution_z, NumLookups) << " ms" << std::endl;
-    }
-    std::cout << std::endl;
-  }
+//  // Some Zipfian distributed tests
+//  for (double z: {0.5, 0.75, 1.0, 1.2, 1.3}) {
+//    auto distribution_z = zipfian(TreeSize, z);
+//    std::cout << "Access Elements According to a Zipf(" << z << ") Distribution:" << std::endl;
+//    if (set_type & VebTreeType) {
+//      std::cout << "  VebTree:            " << timeDistribution<VebTreeWrapper>(distribution_z, NumLookups) << " ms" << std::endl;
+//    }
+//    if (set_type & COTreeType) {
+//      std::cout << "  COTree:             " << timeDistribution<COTreeWrapper>(distribution_z, NumLookups) << " ms" << std::endl;
+//    }
+//    if (set_type & BTreeType) {
+//      std::cout << "  BTree:              " << timeDistribution<BTreeWrapper>(distribution_z, NumLookups) << " ms" << std::endl;
+//    }
+//    if (set_type & StdSetType) {
+//      std::cout << "  std::set:           " << timeDistribution<StdSetTree>(distribution_z, NumLookups) << " ms" << std::endl;
+//    }
+//    if (set_type & StdUnorderedSetType) {
+//      std::cout << "  std::unordered_set: " << timeDistribution<HashTable>(distribution_z, NumLookups) << " ms" << std::endl;
+//    }
+//    std::cout << std::endl;
+//  }
+  return 0;
 }
