@@ -16,7 +16,7 @@ public:
 private:
   void recursivelyPlace(std::vector<int>& sortedInput,
                         int inputMinIndex,
-                        std::vector<int>& tree,
+                        int * tree,
                         int treeMinIndex,
                         int length);
 
@@ -24,7 +24,7 @@ private:
 
 
   int findSubtree(int key, int index, int order); 
-  std::vector<int> tree;
+  int * tree;
   int treeOrder;
   int numSegments;
 }; 
