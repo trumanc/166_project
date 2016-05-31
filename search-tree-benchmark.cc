@@ -117,10 +117,30 @@ struct COParams : public cotree::cotree_params_tag {
 
 typedef cotree::cotree<COParams> COTree;
 
+#define DENSE_BTREE 0
+
 class BTree {
-  btree::btree_set<value_type> tree;
+  typedef btree::btree_set<value_type> btree;
+  btree tree;
 public:
+#if DENSE_BTREE
   BTree(vector<value_type> v) : tree(v.begin(), v.end()) {}
+#else
+  BTree(vector<value_type> v) {
+    // Inserting in stages like this will force the btree implementation to
+    // actually split nodes, meaning its nodes are no longer densely packed.
+    // This might be more realistic if the tree has insertions and deletions.
+    for (size_t i = 0; i < v.size(); i += 3) {
+      tree.insert(i);
+    }
+    for (size_t i = 2; i < v.size(); i += 3) {
+      tree.insert(i);
+    }
+    for (size_t i = 1; i < v.size(); i += 3) {
+      tree.insert(i);
+    }
+  }
+#endif
   bool contains(value_type v) {
     return tree.find(v) != tree.end();
   }
