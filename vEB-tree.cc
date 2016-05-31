@@ -10,28 +10,30 @@ using namespace std;
 // Can go the opposite direction with (ceil(log2(ceil(log2(size + 1)))))
 static unsigned orderToSize[] = {1, 3, 15, 255, 65535, 4294967295};
 
-VebTree::VebTree(std::vector<int> keys){
-  //tree = vector<int>(keys.size()); // This will order the vals into a tree
+#define INFINITY_VALUE LONG_MAX
+
+VebTree::VebTree(std::vector<long> keys){
+  //tree = vector<long>(keys.size()); // This will order the vals into a tree
   if (keys.size() < 2) {
     cout << "Cannot create a vEB tree of size < 2. Exiting..." << endl;
     exit(-1);
   }
-  treeOrder = (int) ceil(log2(ceil(log2(keys.size() + 1))));
+  treeOrder = (long) ceil(log2(ceil(log2(keys.size() + 1))));
 
-  int sizeB = (1 << (1 << (treeOrder -1))) - 1;
-  int nSeg = (keys.size() - 1) / sizeB;
+  long sizeB = (1 << (1 << (treeOrder -1))) - 1;
+  long nSeg = (keys.size() - 1) / sizeB;
   numSegments = nSeg;
-  int nTop = keys.size() - (nSeg * sizeB);
+  long nTop = keys.size() - (nSeg * sizeB);
 
-  tree = new int[keys.size() - nTop + sizeB];
-  int numDummyValues = sizeB - nTop;
-  for (int i = 0; i < numDummyValues; i++) {
-    keys.push_back(INT_MAX);
+  tree = new long[keys.size() - nTop + sizeB];
+  long numDummyValues = sizeB - nTop;
+  for (long i = 0; i < numDummyValues; i++) {
+    keys.push_back(INFINITY_VALUE);
   }
-  vector<int> topElems;
-  int currIndex = sizeB; // Reserve the first block for our top tree
-  int inputIndex = 0;
-  for (int i = 0; i < nSeg; i++) {
+  vector<long> topElems;
+  long currIndex = sizeB; // Reserve the first block for our top tree
+  long inputIndex = 0;
+  for (long i = 0; i < nSeg; i++) {
     recursivelyPlace(keys, inputIndex /*i * (sizeB + 1)*/, tree, currIndex, sizeB);
     currIndex += sizeB;
     inputIndex += sizeB;
@@ -47,12 +49,12 @@ VebTree::VebTree(std::vector<int> keys){
   }
   while(topElems.size() < sizeB) {
     assert(false);
-    topElems.push_back(INT_MAX);
+    topElems.push_back(INFINITY_VALUE);
   }
 
   recursivelyPlace(topElems, 0, tree, 0, sizeB);
-  /*int counter = 0;
-  for (int x : tree) {
+  /*long counter = 0;
+  for (long x : tree) {
     counter++;
     cout << counter << ":  " << x << endl;
   }*/
@@ -64,15 +66,15 @@ VebTree::~VebTree() {
 
 // These are the perfect subtree sizes, up to a large number.
 // Just used for sanity checking.
-bool isPerfectSubTreeSize(int size) {
+bool isPerfectSubTreeSize(long size) {
   return size == 1 || size == 3 || size == 15 || size == 255 || size == 65535;
 }
 
-void VebTree::recursivelyPlace(vector<int>& sortedInput,
-                                int inputMinIndex,
-                                int* tree,
-                                int treeMinIndex, 
-                                int size) {
+void VebTree::recursivelyPlace(vector<long>& sortedInput,
+                                long inputMinIndex,
+                                long* tree,
+                                long treeMinIndex,
+                                long size) {
   // NOTE: range is [minIndex, maxIndex), exclusing the maxIndex
   // We want to take the inputs in this range of the inputs, and store them
   // in this (other) range in the tree array
@@ -80,7 +82,7 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
     cout << "RECURSIVE PLACE WAS WEIRD" << endl;
     assert(false);
     return;
-  } 
+  }
   if (!isPerfectSubTreeSize(size)) {
     cout << "Attempted to recursively place a tree of size " << size << endl;
     exit(1);
@@ -89,17 +91,17 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
     tree[treeMinIndex] = sortedInput.at(inputMinIndex);
     return;
   }
-  int subTreeSize = sqrt(size + 1) - 1;
-  int numChildren = (size / subTreeSize) - 1;
+  long subTreeSize = sqrt(size + 1) - 1;
+  long numChildren = (size / subTreeSize) - 1;
   // Reserve the first segment spot for the top tree
-  int currIndex = treeMinIndex + subTreeSize;
+  long currIndex = treeMinIndex + subTreeSize;
   // Remember the elems for the top tree as we go
-  vector<int> topElems;
-  for (int child = 0; child < numChildren; child++) {
+  vector<long> topElems;
+  for (long child = 0; child < numChildren; child++) {
     recursivelyPlace(sortedInput, inputMinIndex + (child * (subTreeSize + 1)),
                      tree, currIndex,
                      subTreeSize);
-    
+
     currIndex += subTreeSize;
     if (child != numChildren - 1) {
       // Not the last child? Then this next elem belongs in the top
@@ -112,10 +114,10 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
   // we reserved earlier
   recursivelyPlace(topElems, 0, tree, treeMinIndex, subTreeSize);
 }
-  
 
-int VebTree::getPredecessor(int key) {
-  return -1.0; 
+
+long VebTree::getPredecessor(long key) {
+  return -1.0;
 }
 
 
@@ -145,13 +147,13 @@ int VebTree::getPredecessor(int key) {
  * of 15).
  *
  * It does this by first recursively checking the top-structure of this tree,
- * (in this example, the order 0 tree that has one node: 10) and returns if 
+ * (in this example, the order 0 tree that has one node: 10) and returns if
  * it found it.
- * 
+ *
  * If the node wasn't in the top, then it uses the answer from the top query
  * to index into one of the bottom trees (here we have two: the tree with 5
  * and the tree with 15) and search for it there.
- * 
+ *
  * If it is found in the bottom tree, then we return true and set the int
  * accordingly (keeping track of the number of nodes in the top and bottom
  * that were smaller than this node).
@@ -159,7 +161,7 @@ int VebTree::getPredecessor(int key) {
  * If it wasn't in the bottom tree, then we calculate which subtree it would be
  * in, and return false.
  */
-bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
+bool VebTree::containsHelper(long key, long index, long order, long& returnAnswer,
                              bool isParent) const {
   //if (index < 0 || index > tree.size()) {
     //cout << "Hit the weird base case in contains..." << endl;
@@ -171,56 +173,56 @@ bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
       // Found the answer. Report that the key was in the 0th child
       returnAnswer = 0;
       return true;
-    } else { 
+    } else {
       // Not found, say if we're in the 0th (left) or 1th (right) subtree
       if (key < tree[index]) returnAnswer = 0;
       else                      returnAnswer = 1;
       return false;
     }
   }
-  int topAns;
-  int sizeOfChild = orderToSize[order -1];
+  long topAns;
+  long sizeOfChild = orderToSize[order -1];
   if (containsHelper(key, index, order - 1, topAns)) {
     // Found the index in our top structure, report which node it was in
-    int numSmallerChildren = topAns + 1;
+    long numSmallerChildren = topAns + 1;
     returnAnswer = topAns + (sizeOfChild * numSmallerChildren);
     return true;
   } else {
     // Not found in the top, ans is the index of the child to check
     // skip sizeOfChild indices to get past top, then skip sizeOfChild
     // for each child to skip.
-    int indexOfChild = index + (sizeOfChild *(topAns + 1));
+    long indexOfChild = index + (sizeOfChild *(topAns + 1));
     if (isParent) {
       // We have an unusual number of children. Make sure this
       // one is valid
       if (topAns >= numSegments) {
         //TODO: Do I need to set returnAnswer?
-        return false;               
+        return false;
       }
     }
-    int childAns;
+    long childAns;
     if (containsHelper(key, indexOfChild, order -1, childAns)) {
       // Found in the bottom tree, report which node we found it in
 
       // We have topAns full bottom trees, and topAns nodes in the top struct
       // that are less than this node.
-      int nodesBeforeThisBottomTree = topAns * (sizeOfChild + 1);
+      long nodesBeforeThisBottomTree = topAns * (sizeOfChild + 1);
       returnAnswer = nodesBeforeThisBottomTree + childAns;
       return true;
     } else {
       // Not found, report which subtree (below our current bottom trees)
       // the key would be in.
-      int subTreesFromOtherBottoms = (sizeOfChild + 1) * topAns;
-      int subTreesFromThisBottom = childAns;
+      long subTreesFromOtherBottoms = (sizeOfChild + 1) * topAns;
+      long subTreesFromThisBottom = childAns;
       returnAnswer = subTreesFromOtherBottoms + subTreesFromThisBottom;
       return false;
     }
   }
 }
 
-bool VebTree::contains(int key) const {
-  
-  int dummy;
+bool VebTree::contains(long key) const {
+
+  long dummy;
   // The true indicates that this is the highest level tree, and so it
   // has an unusual number of children that must be manually checked.
   return containsHelper(key, 0, treeOrder, dummy, true);

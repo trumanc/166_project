@@ -11,7 +11,7 @@ class VebTreeWrapper {
 
 		~VebTreeWrapper();
 
-		bool contains(int key) const;
+		bool contains(long key) const;
 
 	private:
 		VebTree tree; // The actual data structure

@@ -100,60 +100,64 @@ void usage(int argc, char* argv[]) {
   exit(1);
 }
 
-struct IntParams : public cotree::cotree_params_tag {
-  typedef int value_type;
-  static int compare(int a, int b) {
+typedef long value_type;
+
+struct COParams : public cotree::cotree_params_tag {
+  typedef value_type value_type;
+  static value_type compare(value_type a, value_type b) {
     return a - b;
   }
-  static bool is_present(int a) {
+  static bool is_present(value_type a) {
     return a != absent_value();
   }
-  static int absent_value() {
+  static value_type absent_value() {
     return -1;
   }
 };
 
-typedef cotree::cotree<IntParams> COTree;
+typedef cotree::cotree<COParams> COTree;
 
 class BTree {
-  btree::btree_set<int> tree;
+  btree::btree_set<value_type> tree;
 public:
-  BTree(vector<int> v) : tree(v.begin(), v.end()) {}
-  bool contains(int v) {
+  BTree(vector<value_type> v) : tree(v.begin(), v.end()) {}
+  bool contains(value_type v) {
     return tree.find(v) != tree.end();
   }
 };
 
 class StdSet {
-  std::set<int> set;
+  std::set<value_type> set;
 public:
-  StdSet(vector<int> v) : set(v.begin(), v.end()) {}
-  bool contains(int v) {
+  StdSet(vector<value_type> v) : set(v.begin(), v.end()) {}
+  bool contains(value_type v) {
     return set.find(v) != set.end();
   }
 };
 
 class StdUnorderedSet {
-  std::unordered_set<int> set;
+  std::unordered_set<value_type> set;
 public:
-  StdUnorderedSet(vector<int> v) : set(v.begin(), v.end()) {}
-  bool contains(int v) {
+  StdUnorderedSet(vector<value_type> v) : set(v.begin(), v.end()) {}
+  bool contains(value_type v) {
     return set.find(v) != set.end();
   }
 };
 
 template<class Tree>
 size_t run(size_t tree_size, size_t num_queries) {
-  vector<int> v(tree_size, 0);
-  for (int i = 0; i < tree_size; i++) {
+  vector<value_type> v(tree_size, 0);
+  for (value_type i = 0; i < tree_size; i++) {
     v[i] = 2 * i;
   }
   Tree tree(v);
   v.clear();
   size_t found = 0;
-  for (int n = 0; n < num_queries; n++) {
-    int r = random() % (2 * tree_size);
-    if (tree.contains(r)) found++;
+  for (value_type n = 0; n < num_queries; n++) {
+    value_type r = random() % (2 * tree_size);
+    if (tree.contains(r)) {
+      found++;
+    }
   }
   return found;
 }
@@ -186,5 +190,5 @@ int main(int argc, char* argv[]) {
       found = run<StdUnorderedSet>(tree_size, num_queries);
       break;
   }
-  return found & ~0xFF;
+  return (found & ~0xFF) | sizeof(value_type);
 }
