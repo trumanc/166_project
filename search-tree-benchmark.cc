@@ -18,32 +18,42 @@ bool contains(btree::btree_set<int>& s, int n) {
 int main(int argc, char* argv[]) {
   vector<int> v;
   set<int> s;
-  for (int i = 1; i <= 2000; i++) {
-    v.push_back(i *2);
-    s.insert(i * 2);
+  bool VEB = (string(argv[1]) == "vebtree");
+  if (VEB) {
+    cout << "Using the vEB tree" << endl;
+    for (int i = 1; i <= 65536; i++) {
+      v.push_back(i *2);
+    }
   }
+  v.push_back(200000);
+  v.push_back(200001);
   VebTree t(v);
-
-  //btree::btree_set<int> s;
-  //set<int> s;
-  //for (int i = 1000; i < 10000; i++) {
-    //s.insert(i*2);
-  //}
+  
+  btree::btree_set<int, std::less<int>, std::allocator<int>, 64> bts;
+  if (!VEB) {
+    cout << "Using the B-tree" << endl;
+    for (int i = 1; i <= 65536; i++) {
+      bts.insert(i *2);
+    }
+    bts.insert(200000);
+    bts.insert(200001);
+  }
   int errors = 0;
   int found = 0;
-  for (int n = 0; n < 20000; n++) {
-    int r = random() % 5000;
-    //if (contains(s, r) != (2000 <= r && r <= 20000 && r % 2 == 0)) {
-    if (t.contains(r) != contains(s, r)) {
-      cout << "ERROR: searched for " << r << "..."  << t.contains(r) << endl;
-      errors++;
+  
+  if (string(argv[2]) == "query") {
+    cout << "Querying..." << endl;
+    int numTrials = 1 << 21;
+    for (int n = 0; n < numTrials; n++) {
+      int r = random() % 140000;
+      //if (contains(s, r) != (2000 <= r && r <= 20000 && r % 2 == 0)) {
+      if (VEB) {
+        if (t.contains(r)) found++;
+      } else {
+        if (bts.find(r) != bts.end()) found++;
+      }
     }
-    if (contains(s, r)) {
-      found++;
-    }
-
   }
-  cout << "Done! (errors: " << errors << ")" << endl;
   cout << "found: " << found << endl;
   return 0;
 }

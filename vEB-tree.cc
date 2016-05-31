@@ -23,13 +23,11 @@ VebTree::VebTree(std::vector<int> keys){
   numSegments = nSeg;
   int nTop = keys.size() - (nSeg * sizeB);
 
-  tree = vector<int>(keys.size() - nTop + sizeB);
-
-  size_t nDummies = sizeB - nTop;
-  for (size_t i = 0; i < nDummies; i++) {
+  tree = new int[keys.size() - nTop + sizeB];
+  int numDummyValues = sizeB - nTop;
+  for (int i = 0; i < numDummyValues; i++) {
     keys.push_back(INT_MAX);
   }
-
   vector<int> topElems;
   int currIndex = sizeB; // Reserve the first block for our top tree
   int inputIndex = 0;
@@ -48,6 +46,7 @@ VebTree::VebTree(std::vector<int> keys){
     inputIndex++;
   }
   while(topElems.size() < sizeB) {
+    assert(false);
     topElems.push_back(INT_MAX);
   }
 
@@ -56,8 +55,7 @@ VebTree::VebTree(std::vector<int> keys){
   for (int x : tree) {
     counter++;
     cout << counter << ":  " << x << endl;
-  }
-  */
+  }*/
 }
 
 // These are the perfect subtree sizes, up to a large number.
@@ -68,7 +66,7 @@ bool isPerfectSubTreeSize(int size) {
 
 void VebTree::recursivelyPlace(vector<int>& sortedInput,
                                 int inputMinIndex,
-                                vector<int>& tree,
+                                int* tree,
                                 int treeMinIndex, 
                                 int size) {
   // NOTE: range is [minIndex, maxIndex), exclusing the maxIndex
@@ -84,7 +82,7 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
     exit(1);
   }
   if (size == 1) {// Base case! size one is easy
-    tree.at(treeMinIndex) = sortedInput.at(inputMinIndex);
+    tree[treeMinIndex] = sortedInput.at(inputMinIndex);
     return;
   }
   int subTreeSize = sqrt(size + 1) - 1;
@@ -159,19 +157,19 @@ int VebTree::getPredecessor(int key) {
  */
 bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
                              bool isParent) const {
-  if (index < 0 || index > tree.size()) {
+  //if (index < 0 || index > tree.size()) {
     //cout << "Hit the weird base case in contains..." << endl;
     //cout << "Searching for " << key << endl;
-    assert(false);
-  }
+  //  assert(false);
+  //}
   if (order == 0) {
-    if (key == tree.at(index)) {
+    if (key == tree[index]) {
       // Found the answer. Report that the key was in the 0th child
       returnAnswer = 0;
       return true;
     } else { 
       // Not found, say if we're in the 0th (left) or 1th (right) subtree
-      if (key < tree.at(index)) returnAnswer = 0;
+      if (key < tree[index]) returnAnswer = 0;
       else                      returnAnswer = 1;
       return false;
     }
