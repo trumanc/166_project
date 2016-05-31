@@ -24,6 +24,12 @@ VebTree::VebTree(std::vector<int> keys){
   int nTop = keys.size() - (nSeg * sizeB);
 
   tree = vector<int>(keys.size() - nTop + sizeB);
+
+  size_t nDummies = sizeB - nTop;
+  for (size_t i = 0; i < nDummies; i++) {
+    keys.push_back(INT_MAX);
+  }
+
   vector<int> topElems;
   int currIndex = sizeB; // Reserve the first block for our top tree
   int inputIndex = 0;

@@ -1,6 +1,15 @@
 #include "Timing.h"
 #include <algorithm>
 
+void do_other_work() {
+  size_t size = 65536;
+  volatile int * values = new int[size];
+  for (size_t i = 0; i < size; i++) {
+    values[i] = i;
+  }
+  delete[] values;
+}
+
 /**
  * Returns a random number generator that generates data according to a Zipfian
  * distribution, a type of distribution that occurs frequently in real-world

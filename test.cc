@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iostream>
 
-struct IntCOBTreeParams : public cotree::cotree_params_tag {
+struct IntParams : public cotree::cotree_params_tag {
 	typedef int value_type;
 	static int compare(int a, int b) {
 		return a - b;
@@ -81,7 +81,7 @@ void test_insertion() {
 }
 
 void test_correctness() {
-	typedef cotree::cotree<IntCOBTreeParams> cotree;
+	typedef cotree::cotree<IntParams> cotree;
 
 	std::cout << "Testing cotree sanity..." << std::flush;
 	test_sanity<cotree>();

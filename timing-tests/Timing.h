@@ -12,8 +12,16 @@
 #include <cmath>
 #include <stddef.h>
 
+/* Once every kOtherWorkInterval lookups, other work is performed. */
+static const size_t kOtherWorkInterval = 1024;
+
 /* The random seed used throughout the run. */
 static const size_t kRandomSeed = 137;
+
+/**
+ * Performs other work.
+ */
+void do_other_work();
 
 /**
  * Returns a random number generator that generates data according to a Zipfian
@@ -42,12 +50,17 @@ double timeDistribution(ProbabilityDistribution& gen,
 
   std::chrono::high_resolution_clock::duration total = std::chrono::high_resolution_clock::duration::zero();
 
-  for (size_t i = 0; i < numLookups; i++) {
+  size_t iter = 0;
+  for (size_t i = 0; i < numLookups; i++, iter++) {
     auto index = gen(engine);
     auto start = std::chrono::high_resolution_clock::now();
     tree.contains(index);
     auto end = std::chrono::high_resolution_clock::now();
     total += end - start;
+
+    if (iter % kOtherWorkInterval == 0) {
+      do_other_work();
+    }
   }
 
   return std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / 1.0e6;
@@ -88,11 +101,16 @@ double timeSequential(size_t count, int start, int step) {
 
   std::chrono::high_resolution_clock::duration total = std::chrono::high_resolution_clock::duration::zero();
 
-  for (int i = start; i >= 0 && i < int(count); i += step) {
+  size_t iter = 0;
+  for (int i = start; i >= 0 && i < int(count); i += step, iter++) {
     auto start = std::chrono::high_resolution_clock::now();
     tree.contains(i);
     auto end = std::chrono::high_resolution_clock::now();
     total += end - start;
+
+    if (iter % kOtherWorkInterval == 0) {
+      do_other_work();
+    }
   }
 
   return std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / 1.0e6;
@@ -137,14 +155,19 @@ double timeWorkingSets(size_t numElems, size_t numSets, size_t numLookups) {
 
   std::chrono::high_resolution_clock::duration total = std::chrono::high_resolution_clock::duration::zero();
 
-  for (size_t i = 0; i < numLookups; i++) {
-        size_t blockId = (double(i) / numLookups) * numSets;
+  size_t iter = 0;
+  for (size_t i = 0; i < numLookups; i++, iter++) {
+    size_t blockId = (double(i) / numLookups) * numSets;
     int index = gen(engine) + blockId * numElems / numSets;
-    
+
     auto start = std::chrono::high_resolution_clock::now();
     tree.contains(index);
     auto end = std::chrono::high_resolution_clock::now();
     total += end - start;
+
+    if (iter % kOtherWorkInterval == 0) {
+      do_other_work();
+    }
   }
 
   return std::chrono::duration_cast<std::chrono::nanoseconds>(total).count() / 1.0e6;
