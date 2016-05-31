@@ -8,6 +8,7 @@
 class VebTree {
 public:
   VebTree(std::vector<int> keys);
+  ~VebTree();
 
   //should return value later
   bool contains(int key) const;

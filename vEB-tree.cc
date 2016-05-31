@@ -58,6 +58,10 @@ VebTree::VebTree(std::vector<int> keys){
   }*/
 }
 
+VebTree::~VebTree() {
+  delete[] tree;
+}
+
 // These are the perfect subtree sizes, up to a large number.
 // Just used for sanity checking.
 bool isPerfectSubTreeSize(int size) {
