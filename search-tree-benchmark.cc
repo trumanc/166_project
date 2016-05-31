@@ -8,19 +8,6 @@
 
 using namespace std;
 
-struct IntParams : public cotree::cotree_params_tag {
-  typedef int value_type;
-  static int compare(int a, int b) {
-    return a - b;
-  }
-  static bool is_present(int a) {
-    return a != absent_value();
-  }
-  static int absent_value() {
-    return -1;
-  }
-};
-
 bool calculate_unsigned(const char * str, size_t& value) {
   const int stack_max = 4;
   size_t stack[stack_max + 1];
@@ -113,10 +100,63 @@ void usage(int argc, char* argv[]) {
   exit(1);
 }
 
+struct IntParams : public cotree::cotree_params_tag {
+  typedef int value_type;
+  static int compare(int a, int b) {
+    return a - b;
+  }
+  static bool is_present(int a) {
+    return a != absent_value();
+  }
+  static int absent_value() {
+    return -1;
+  }
+};
+
 typedef cotree::cotree<IntParams> COTree;
-typedef btree::btree_set<int, std::less<int>, std::allocator<int>, 64> BTree;
-typedef set<int> Set;
-typedef unordered_set<int> UnorderedSet;
+
+class BTree {
+  btree::btree_set<int> tree;
+public:
+  BTree(vector<int> v) : tree(v.begin(), v.end()) {}
+  bool contains(int v) {
+    return tree.find(v) != tree.end();
+  }
+};
+
+class StdSet {
+  std::set<int> set;
+public:
+  StdSet(vector<int> v) : set(v.begin(), v.end()) {}
+  bool contains(int v) {
+    return set.find(v) != set.end();
+  }
+};
+
+class StdUnorderedSet {
+  std::unordered_set<int> set;
+public:
+  StdUnorderedSet(vector<int> v) : set(v.begin(), v.end()) {}
+  bool contains(int v) {
+    return set.find(v) != set.end();
+  }
+};
+
+template<class Tree>
+size_t run(size_t tree_size, size_t num_queries) {
+  vector<int> v(tree_size, 0);
+  for (int i = 0; i < tree_size; i++) {
+    v[i] = 2 * i;
+  }
+  Tree tree(v);
+  v.clear();
+  size_t found = 0;
+  for (int n = 0; n < num_queries; n++) {
+    int r = random() % (2 * tree_size);
+    if (tree.contains(r)) found++;
+  }
+  return found;
+}
 
 int main(int argc, char* argv[]) {
   size_t tree_size;
@@ -128,38 +168,23 @@ int main(int argc, char* argv[]) {
       !parse_tree_type(argv[3], type)) {
     usage(argc, argv);
   }
-
-  vector<int> v(tree_size, 0);
-  for (int i = 0; i < tree_size; i++) {
-    v[i] = (i+1) * 2;
+  int found;
+  switch (type) {
+    case VebTreeType:
+      found = run<VebTree>(tree_size, num_queries);
+      break;
+    case COTreeType:
+      found = run<COTree>(tree_size, num_queries);
+      break;
+    case BTreeType:
+      found = run<BTree>(tree_size, num_queries);
+      break;
+    case StdSetType:
+      found = run<StdSet>(tree_size, num_queries);
+      break;
+    case StdUnorderedSetType:
+      found = run<StdUnorderedSet>(tree_size, num_queries);
+      break;
   }
-
-  VebTree vebtree(v);
-  BTree btree(v.begin(), v.end());
-  COTree cotree(v);
-  Set set(v.begin(), v.end());
-  UnorderedSet uset(v.begin(), v.end());
-
-  int found = 0;
-  for (int n = 0; n < num_queries; n++) {
-    int r = random() % (2 * tree_size);
-    switch (type) {
-      case VebTreeType:
-        if (vebtree.contains(r)) found++;
-        break;
-      case COTreeType:
-        if (cotree.contains(r)) found++;
-        break;
-      case BTreeType:
-        if (btree.find(r) != btree.end()) found++;
-        break;
-      case StdSetType:
-        if (set.find(r) != set.end()) found++;
-        break;
-      case StdUnorderedSetType:
-        if (uset.find(r) != uset.end()) found++;
-        break;
-    }
-  }
-  return found;
+  return found & ~0xFF;
 }
