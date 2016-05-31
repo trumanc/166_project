@@ -107,7 +107,7 @@ void VebTree::recursivelyPlace(vector<int>& sortedInput,
   
 
 int VebTree::getPredecessor(int key) {
-  return -1; 
+  return -1.0; 
 }
 
 
@@ -152,7 +152,7 @@ int VebTree::getPredecessor(int key) {
  * in, and return false.
  */
 bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
-                             bool isParent) {
+                             bool isParent) const {
   if (index < 0 || index > tree.size()) {
     //cout << "Hit the weird base case in contains..." << endl;
     //cout << "Searching for " << key << endl;
@@ -210,7 +210,7 @@ bool VebTree::containsHelper(int key, int index, int order, int& returnAnswer,
   }
 }
 
-bool VebTree::contains(int key) {
+bool VebTree::contains(int key) const {
   
   int dummy;
   // The true indicates that this is the highest level tree, and so it

@@ -1,0 +1,5 @@
+*.o
+/run-timing-tests
+/test
+/tree-tester
+*.swp
