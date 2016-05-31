@@ -151,7 +151,7 @@ size_t run(size_t tree_size, size_t num_queries) {
     v[i] = 2 * i;
   }
   Tree tree(v);
-  v.clear();
+  v = vector<value_type>();
   size_t found = 0;
   for (value_type n = 0; n < num_queries; n++) {
     value_type r = random() % (2 * tree_size);
