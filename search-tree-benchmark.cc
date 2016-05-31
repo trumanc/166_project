@@ -3,6 +3,8 @@
 #include "btree_set.h"
 #include "vEB-tree.h"
 #include "cotree.h"
+#include <set>
+#include <unordered_set>
 
 using namespace std;
 
@@ -83,7 +85,9 @@ bool calculate_unsigned(const char * str, size_t& value) {
 enum TreeType {
   VebTreeType,
   COTreeType,
-  BTreeType
+  BTreeType,
+  StdSetType,
+  StdUnorderedSetType
 };
 
 bool parse_tree_type(const char * str, TreeType& type) {
@@ -94,6 +98,10 @@ bool parse_tree_type(const char * str, TreeType& type) {
     type = COTreeType;
   } else if (s == "BTree") {
     type = BTreeType;
+  } else if (s == "std::set") {
+    type = StdSetType;
+  } else if (s == "std::unordered_set") {
+    type = StdUnorderedSetType;
   } else {
     return false;
   }
@@ -107,6 +115,8 @@ void usage(int argc, char* argv[]) {
 
 typedef cotree::cotree<IntParams> COTree;
 typedef btree::btree_set<int, std::less<int>, std::allocator<int>, 64> BTree;
+typedef set<int> Set;
+typedef unordered_set<int> UnorderedSet;
 
 int main(int argc, char* argv[]) {
   size_t tree_size;
@@ -127,6 +137,8 @@ int main(int argc, char* argv[]) {
   VebTree vebtree(v);
   BTree btree(v.begin(), v.end());
   COTree cotree(v);
+  Set set(v.begin(), v.end());
+  UnorderedSet uset(v.begin(), v.end());
 
   int found = 0;
   for (int n = 0; n < num_queries; n++) {
@@ -140,6 +152,12 @@ int main(int argc, char* argv[]) {
         break;
       case BTreeType:
         if (btree.find(r) != btree.end()) found++;
+        break;
+      case StdSetType:
+        if (set.find(r) != set.end()) found++;
+        break;
+      case StdUnorderedSetType:
+        if (uset.find(r) != uset.end()) found++;
         break;
     }
   }
