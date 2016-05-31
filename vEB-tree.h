@@ -7,7 +7,7 @@
 // Keys and Values
 class VebTree {
 public:
-  VebTree(std::vector<long> keys);
+  VebTree(std::vector<long>& keys);
   ~VebTree();
 
   //should return value later

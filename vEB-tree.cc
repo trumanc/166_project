@@ -12,7 +12,7 @@ static unsigned orderToSize[] = {1, 3, 15, 255, 65535, 4294967295};
 
 #define INFINITY_VALUE LONG_MAX
 
-VebTree::VebTree(std::vector<long> keys){
+VebTree::VebTree(std::vector<long>& keys){
   //tree = vector<long>(keys.size()); // This will order the vals into a tree
   if (keys.size() < 2) {
     cout << "Cannot create a vEB tree of size < 2. Exiting..." << endl;

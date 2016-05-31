@@ -17,7 +17,7 @@ OBJECTS = vEB-tree.o \
 	  $(TDIR)/vEB-tree-wrapper.o
 
 
-all: run-timing-tests test tree-tester
+all: tree-tester
 
 %.o: %.cc $(HEADERS) Makefile
 	$(CXX) $(CPPFLAGS) -c -o $@ $<
