@@ -32,4 +32,4 @@ run-timing-tests: $(OBJECTS)
 	$(CXX) $(CPPFLAGS) -o $@ $^
 
 clean:
-	rm -rf -- *.o *.dSYM $(TDIR)/*.o $(TDIR)/*.dSYM
+	rm -rf -- *.o $(TDIR)/*.o
